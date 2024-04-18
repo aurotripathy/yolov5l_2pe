@@ -78,21 +78,29 @@ def run(runner, inference_time):
 def main(cfg, input_path):
     model_info, runner_info = get_params_from_cfg(cfg)
 
-    model_path = "enf_models/borde_model_single_2.enf"
-    # model_path = "borde_model_i8.onnx"
-    input_datas = os.listdir(input_path)
-    inference_times = [Value('d', 0.0) for i in range(2)]
-    runners = [WarboyRunner(model_path, input_path, runner_info, "npu0pe"+str(i), i) for i in range(2)]
-    warboy_processes = [mp.Process(target = run, args = (runners[i], inference_times[i],)) for i in range(2)]
-
-    for proc in warboy_processes:
-        proc.start()
-
-    for proc in warboy_processes:
-        proc.join()
+    # model_path = "enf_models/borde_model_single_2.enf"
+    model_path = "borde_model_i8.onnx"
     
-    inference_time = max(inference_times[0].value, inference_times[1].value)
-    print(f"Number of images: {len(input_datas)} FPS: {len(input_datas)/inference_time}")
+    iterations = 10
+    fps_list = []
+    for i in range(iterations):
+        input_datas = os.listdir(input_path)
+        inference_times = [Value('d', 0.0) for i in range(2)]
+        runners = [WarboyRunner(model_path, input_path, runner_info, "npu0pe"+str(i), i) for i in range(2)]
+        warboy_processes = [mp.Process(target = run, args = (runners[i], inference_times[i],)) for i in range(2)]
+
+        for proc in warboy_processes:
+            proc.start()
+
+        for proc in warboy_processes:
+            proc.join()
+        
+        inference_time = max(inference_times[0].value, inference_times[1].value)
+        fps = len(input_datas)/inference_time
+        print(f"Number of images: {len(input_datas)} FPS: {fps}")
+        fps_list.append(fps)
+
+    print(f'Resolution: {runner_info["input_shape"]} Iteration count: {iterations} Avg. FPS: {sum(fps_list)/iterations}')
 
 if __name__ == "__main__":
     app()
