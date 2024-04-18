@@ -1,0 +1,56 @@
+model_info:
+  model_type: detection
+  model_name: yolov5m
+# weight: /home/furiosa/borde/borde-demo/borde-weights/1280_l_165K_almond_real_synthetic_data_22_March_24_best.pt
+  weight: /home/furiosa/borde/borde-demo/borde-weights/1280_l_169K_almond_real_synthetic_data_30_March_24_best.pt
+  onnx_path: borde_model.onnx # output onnx path
+  i8_onnx_path: borde_model_i8.onnx # quantized onnx model path
+#  input_shape: [1,3,448,1280] # input shape for model
+  input_shape: [1,3,128,2048] # input shape for model
+  nc: 28 # number of classes
+  num_anchors: 3
+
+quantization_info:
+  calib_data: "/home/furiosa/borde/borde-demo/Benchmarking-Datasets/calib-data" # data directory path for calibration
+  num_data: 30 # number of data for calibration
+  method: SQNR_ASYM # calibration method
+
+runner_info:
+  conf_thres: 0.25
+  iou_thres: 0.7
+#  input_shape: [448,1280]
+  input_shape: [128,2048]
+  class_names:  
+    - Adhering_Skin
+    - Blanched
+    - Broken_Blanched
+    - Butte
+    - Carmel
+    - Chip_Scratch
+    - Discolor
+    - Doubles
+    - Foreign_Material_Hull
+    - Fritz
+    - Mission
+    - Monterey
+    - NonPareil
+    - Other_Defects
+    - Padre
+    - Peerless
+    - Price
+    - Serious_Defects
+    - Sonora
+    - Specks
+    - Split_Broken
+    - X_LooseSkin_Dust_Particle
+    - Y_Gummy
+    - Z_Pinhole
+    - Z1_Inshell
+    - Z2_Embeddedshell
+    - Z3_FM_Other
+    - Z4_FM_Rock_Dirtball
+  
+  anchors:
+    - [10, 13, 16, 30, 33, 23]
+    - [30, 61, 62, 45, 59, 119]
+    - [116, 90, 156, 198, 373, 326]
